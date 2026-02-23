@@ -1,0 +1,89 @@
+services:
+  backend:
+    container_name: backend
+    build: ./backend
+    restart: always
+    ports:
+      - "3000:3000"
+    networks:
+      - transcendance
+    env_file: .env
+    develop:
+      watch:
+        - action: sync
+          path: backend
+          target: /app
+          ignore:
+            - node_modules/
+            - Dockerfile
+            - tsconfig.json
+        - action: rebuild
+          path: backend/package.json
+    volumes:
+      - ./backend/app/db:/app/db  # SQLite persistante
+
+  frontend:
+    container_name: frontend
+    build: ./frontend
+    restart: always
+    depends_on:
+      - backend
+    ports:
+      - "8080:443"
+    networks:
+      - transcendance
+    develop:
+      watch:
+        - action: rebuild
+          path: frontend
+          target: /usr/share/nginx/html
+          ignore:
+            - node_modules/
+            - Dockerfile
+        - action: rebuild
+          path: frontend/package.json
+
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: prometheus
+    command:
+      - "--config.file=/etc/prometheus/prometheus.yml"
+      - "--storage.tsdb.retention.time=15d"
+    volumes:
+      - ./monitoring/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - ./monitoring/prometheus/rules:/etc/prometheus/rules:ro
+      - prometheus-data:/prometheus
+    ports:
+      - "9090:9090"
+    networks:
+      - transcendance
+    depends_on:
+      - backend
+
+  grafana:
+    image: grafana/grafana-oss:latest
+    container_name: grafana
+    ports:
+      - "3001:3000"
+    volumes:
+      - ./monitoring/grafana/provisioning/datasources:/etc/grafana/provisioning/datasources
+      - ./monitoring/grafana/provisioning/dashboards:/etc/grafana/provisioning/dashboards
+      - ./monitoring/grafana/provisioning/alerting:/etc/grafana/provisioning/alerting
+      - ./monitoring/grafana/dashboard:/var/lib/grafana/dashboards
+      - grafana-data:/var/lib/grafana
+    env_file: .env
+    environment:
+      - GF_LOG_LEVEL=warn
+    networks:
+      - transcendance
+    depends_on:
+      - prometheus
+
+  
+volumes:
+  prometheus-data:
+  grafana-data:
+
+networks:
+  transcendance:
+    driver: bridge
