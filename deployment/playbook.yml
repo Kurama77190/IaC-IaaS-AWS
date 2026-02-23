@@ -1,0 +1,44 @@
+# =============================================================================
+# PLAYBOOK PRINCIPAL - Configuration du serveur Inception
+# =============================================================================
+# Exécution : ansible-playbook playbook.yml
+# 
+# Architecture modulaire avec rôles :
+#   - system    : Mise à jour du système
+#   - docker    : Installation de Docker et docker-compose
+#   - inception : Déploiement des containers WordPress
+# =============================================================================
+
+#---
+#- name: Configuration du serveur Inception
+#  hosts: inception
+#  become: yes
+
+#  vars:
+#    # Chemin du projet sur le serveur distant
+#    project_path: /home/ubuntu/inception
+
+#  # =========================================================================
+#  # RÔLES - Architecture modulaire
+#  # =========================================================================
+#  roles:
+#    - role: docker
+#      tags: docker
+#    - role: inception
+#      tags: deploy
+
+---
+- name: Configuration du server_web
+  hosts: server_web
+  become: yes
+
+  vars:
+    project_path: /home/ubuntu/transcendance
+
+  roles:
+    - role: bootstrap
+      tags: [bootstrap]
+    - role: docker
+      tags: [docker, bootstrap]
+    - role: server_web
+      tags: [deploy]

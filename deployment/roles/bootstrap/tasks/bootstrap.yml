@@ -1,0 +1,19 @@
+# =============================================================================
+# ROLE SYSTEM - Configuration système de base
+# =============================================================================
+
+---
+- name: Mise à jour du cache APT
+  apt:
+    update_cache: yes
+    cache_valid_time: 3600
+
+- name: Installation des paquets système essentiels
+  apt:
+    name: "{{ system_packages }}"
+    state: present
+
+- name: Configuration du timezone
+  timezone:
+    name: "{{ system_timezone }}"
+

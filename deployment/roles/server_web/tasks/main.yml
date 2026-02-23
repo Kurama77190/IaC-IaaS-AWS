@@ -1,0 +1,41 @@
+---
+- name: Création du répertoire du projet
+  file:
+    path: "{{ project_path }}"
+    state: directory
+    owner: ubuntu
+    group: ubuntu
+    mode: '0755'
+
+- name: Copie du server web sur l'instance EC2
+  synchronize:
+    src: ../../../../ft_transcendance/
+    dest: "{{ project_path }}/"
+    rsync_opts:
+      - "--exclude=.git"
+
+#- name: Copie du fichier .env
+#  copy:
+#    src: ~/secrets/.env
+#    dest: "{{ project_path }}/.env"
+#    owner: ubuntu
+#    group: ubuntu
+#    mode: '0600'
+
+#- name: Création des répertoires pour les volumes Docker
+#  file:
+#    path: "{{ item }}"
+#    state: directory
+#    owner: ubuntu
+#    group: ubuntu
+#    mode: '0755'
+#  loop:
+#    - /home/ubuntu/data
+#    - /home/ubuntu/data/mariadb
+#    - /home/ubuntu/data/wordpress
+
+#- name: Lancement de make
+#  community.docker.docker_compose_v2:
+#    project_src: "{{ project_path }}"
+#    state: present
+#    build: always

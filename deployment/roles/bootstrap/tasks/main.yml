@@ -1,0 +1,7 @@
+# =============================================================================
+# ROLE BOOTSTRAP - Point d'entrée principal
+# =============================================================================
+
+---
+- name: Include bootstrap configuration tasks
+  include_tasks: bootstrap.yml

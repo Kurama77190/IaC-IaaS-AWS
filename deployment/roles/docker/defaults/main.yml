@@ -1,0 +1,10 @@
+---
+# Variables par défaut du rôle docker
+docker_users:
+  - ubuntu
+
+docker_packages:
+  - docker-ce
+  - docker-ce-cli
+  - containerd.io
+  - docker-compose-plugin

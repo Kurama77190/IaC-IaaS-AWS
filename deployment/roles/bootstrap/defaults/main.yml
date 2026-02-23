@@ -1,0 +1,12 @@
+---
+# Variables par défaut du rôle system
+system_timezone: "Europe/Paris"
+system_packages:
+  - nano
+  - git
+  - curl
+  - wget
+  - htop
+  - net-tools
+  - fail2ban
+  - make

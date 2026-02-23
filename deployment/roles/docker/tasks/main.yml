@@ -1,0 +1,48 @@
+# =============================================================================
+# ROLE DOCKER - Installation et configuration de Docker
+# =============================================================================
+
+---
+- name: Mise à jour du cache APT
+  apt:
+    update_cache: yes
+    cache_valid_time: 3600
+
+- name: Installation des dépendances Docker
+  apt:
+    name:
+      - apt-transport-https
+      - ca-certificates
+      - curl
+      - gnupg
+      - lsb-release
+    state: present
+
+- name: Ajout de la clé GPG Docker
+  apt_key:
+    url: https://download.docker.com/linux/ubuntu/gpg
+    state: present
+
+- name: Ajout du repository Docker
+  apt_repository:
+    repo: "deb [arch=amd64] https://download.docker.com/linux/ubuntu focal stable"
+    state: present
+
+- name: Installation de Docker
+  apt:
+    name: "{{ docker_packages }}"
+    state: present
+    update_cache: yes
+
+- name: Démarrage et activation de Docker
+  service:
+    name: docker
+    state: started
+    enabled: yes
+
+- name: Ajout des utilisateurs au groupe docker
+  user:
+    name: "{{ item }}"
+    groups: docker
+    append: yes
+  loop: "{{ docker_users }}"

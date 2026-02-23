@@ -1,0 +1,4 @@
+---
+# Dépendances du rôle docker
+dependencies:
+  - bootstrap
